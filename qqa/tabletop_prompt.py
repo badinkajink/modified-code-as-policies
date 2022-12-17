@@ -245,12 +245,6 @@ put_first_on_second('white block', 'cyan bowl')
 ## Example 3:
 
 objects = ['cyan block', 'white block', 'cyan bowl', 'blue block', 'blue bowl', 'white bowl']
-# move all the thingmabobs into the bowls
-say('What items on the table are thingmabobs?')
-
-## Example 4:
-
-objects = ['cyan block', 'white block', 'cyan bowl', 'blue block', 'blue bowl', 'white bowl']
 # move some blocks into the bowl.
 say('Which blocks did you want to move?')
 
