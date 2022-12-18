@@ -6,9 +6,9 @@ prompt_tabletop_ui = '''
 ## I may ask you to move, place, or somehow manipulate certain objects. 
 ## If you're unsure about any part of the instruction, ask me to clarify what I mean.
 ## In the following example, I'll ask:
-## Move me the most awesome block.
+# Move me the most awesome block.
 ## Then you can ask for clarification like such:
-## say(I see green, yellow, and brown blocks. Which is the most awesome?)
+# say(I see green, yellow, and brown blocks. Which is the most awesome?)
 ## Now, here are examples of interaction without much feedback.
 
 import numpy as np
@@ -207,7 +207,7 @@ for block_name, pt in zip(block_names, triangle_pts):
   put_first_on_second(block_name, pt)
 
 ## Now, here are examples of interaction with feedback.
-## Example 1
+## Example 1. Other blocks or bowls can be considered as obstacles, or they can be arbitrary. 
 
 objects = ['red block', 'green block', 'brown bowl', 'orange block', 'yellow block', 'green bowl']
 # there's now a large obstacle in the bottom. move the block near the top left to the bottom right.
@@ -215,13 +215,11 @@ objects = ['red block', 'green block', 'brown bowl', 'orange block', 'yellow blo
 top_left_block_name = parse_obj_name('left most and top most block', f'objects = {get_obj_names()}')
 say(f'Going to move the {top_left_block_name} to the bottom left, then the bottom right. Is this a good plan?')
 
-objects = ['red block', 'green block', 'brown bowl', 'orange block', 'yellow block', 'green bowl']
 # No, please plan an alternate route.
 
 objects = ['red block', 'green block', 'brown bowl', 'orange block', 'yellow block', 'green bowl']
 say(f'Going to move the {top_left_block_name} to the top left, then the bottom right. Is this a good plan?')
 
-objects = ['red block', 'green block', 'brown bowl', 'orange block', 'yellow block', 'green bowl']
 # yes, proceed with that plan.
 
 objects = ['red block', 'green block', 'brown bowl', 'orange block', 'yellow block', 'green bowl']
@@ -252,7 +250,7 @@ say('Which blocks did you want to move?')
 say('Can you clarify what the cool blocks are?')
 
 # Cool blocks are winter-themed.
-say('Got it - moving only the white block. Now, which bowl do you want to move the white block into?)
+say('Got it - moving only the white block. Now, which bowl do you want to move the white block into?')
 
 # The bowl.
 say('Can you clarify what bowl you want?')
