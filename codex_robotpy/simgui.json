@@ -1,0 +1,62 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "AnalogGyro[0]": {
+        "header": {
+          "open": false
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/AnalogGyro[1]": "Gyro",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/Talon[1]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[2]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[3]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[4]": "Motor Controller",
+      "/SmartDashboard/Autonomous Mode": "String Chooser",
+      "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Autonomous Mode": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "autonomous": {
+        "Place cone": {
+          "state": {
+            "open": true
+          }
+        },
+        "open": true
+      }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    }
+  },
+  "NetworkTables View": {
+    "visible": false
+  }
+}
