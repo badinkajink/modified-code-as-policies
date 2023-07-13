@@ -1,9 +1,34 @@
 {
   "HALProvider": {
+    "Encoders": {
+      "0": {
+        "header": {
+          "open": true
+        }
+      },
+      "1": {
+        "header": {
+          "open": true
+        }
+      },
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "AnalogGyro[0]": {
         "header": {
           "open": false
+        }
+      },
+      "AnalogGyro[1]": {
+        "header": {
+          "open": true
+        }
+      },
+      "BuiltInAccel": {
+        "header": {
+          "open": true
         }
       }
     }

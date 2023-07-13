@@ -35,19 +35,25 @@ class PhysicsEngine:
         self.l_motor = wpilib.simulation.PWMSim(robot.l_motor.getChannel())
         self.r_motor = wpilib.simulation.PWMSim(robot.r_motor.getChannel())
 
-        self.dio1 = wpilib.simulation.DIOSim(robot.limit1)
-        self.dio2 = wpilib.simulation.DIOSim(robot.limit2)
-        self.ain2 = wpilib.simulation.AnalogInputSim(robot.position)
-
-        self.motor = wpilib.simulation.PWMSim(robot.motor.getChannel())
+        # Wheel Encoders
+        self.l_encoder = wpilib.simulation.EncoderSim(robot.l_encoder)
+        self.r_encoder = wpilib.simulation.EncoderSim(robot.r_encoder)
 
         # Gyro
         self.gyro = wpilib.simulation.AnalogGyroSim(robot.gyro)
 
-        self.position = 0
+        # Accelerometer
+        self.accelerometer = wpilib.simulation.BuiltInAccelerometerSim(robot.accelerometer)
 
         # Change these parameters to fit your robot!
         bumper_width = 3.25 * units.inch
+
+        # unused
+        self.dio1 = wpilib.simulation.DIOSim(robot.limit1)
+        self.dio2 = wpilib.simulation.DIOSim(robot.limit2)
+        self.ain2 = wpilib.simulation.AnalogInputSim(robot.position)
+        self.motor = wpilib.simulation.PWMSim(robot.motor.getChannel())
+        self.position = 0
 
         # fmt: off
         self.drivetrain = tankmodel.TankModel.theory(
