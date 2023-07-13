@@ -10,10 +10,13 @@
 #
 
 import wpilib.simulation
-
+from wpilib import RobotController
 from pyfrc.physics.core import PhysicsInterface
 from pyfrc.physics import motor_cfgs, tankmodel
 from pyfrc.physics.units import units
+from pyfrc.physics import drivetrains
+from wpimath.system.plant import DCMotor
+from wpimath.system import LinearSystemId
 
 import typing
 
@@ -55,18 +58,42 @@ class PhysicsEngine:
         self.motor = wpilib.simulation.PWMSim(robot.motor.getChannel())
         self.position = 0
 
+        '''
+        # Romi Motor Specs for reference: TI_RSLK MAX
+        MOTOR_CFG_ROMI_MOTOR = MotorModelConfig(
+            "Romi Motor",
+            NOMINAL_VOLTAGE,
+            150 * units.cpm,
+            0.13 * units.amp,
+            0.1765 * units.N_m,
+            1.25 * units.amp,
+        )
+        # robot weight: 215g (0.47bs)
+        # motors on 120:1 ratio
+        # wheel diameter: 70mm (2.75")
+        # trackwidth of 141mm (5.5")
+        # 12cpr encoders, 1440 counts per revolution
+        '''
+
         # fmt: off
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_CIM,           # motor configuration
-            110 * units.lbs,                    # robot mass
-            10.71,                              # drivetrain gear ratio
-            2,                                  # motors per side
-            22 * units.inch,                    # robot wheelbase
-            23 * units.inch + bumper_width * 2, # robot width
-            32 * units.inch + bumper_width * 2, # robot length
-            6 * units.inch,                     # wheel diameter
+            motor_cfgs.MOTOR_CFG_ROMI_MOTOR,           # motor configuration
+            0.47 * units.lbs,                    # robot mass
+            0.00833,                             # drivetrain gear ratio 120:1
+            1,                                   # motors per side
+            4 * units.inch,                     # robot wheelbase
+            5.5 * units.inch,                   # robot width
+            6 * units.inch,                     # robot length
+            2.75 * units.inch,                  # wheel diameter
         )
         # fmt: on
+
+        # https://github.com/robotpy/examples/blob/main/physics-camsim/src/physics.py
+        self.system = LinearSystemId.identifyDrivetrainSystem(1.98, 0.2, 1.5, 0.3)
+        # https://github.com/wpilibsuite/frc-docs/blob/main/source/docs/software/wpilib-tools/robot-simulation/drivesim-tutorial/drivetrain-model.rst
+        self.drivesim = wpilib.simulation.DifferentialDrivetrainSim(
+           J=0.215, gearing=0.008333, mass=0.215, wheelRadius=0.035, trackWidth=0.141, driveMotor=DCMotor.romiBuiltIn(1)
+        )
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         """
@@ -81,6 +108,22 @@ class PhysicsEngine:
         # Simulate the drivetrain
         l_motor = self.l_motor.getSpeed()
         r_motor = self.r_motor.getSpeed()
+
+        ###
+        # EncoderSim
+        l_speed = self.l_motor.getSpeed()
+        r_speed = self.r_motor.getSpeed()
+
+        voltage = RobotController.getInputVoltage()
+
+        self.drivesim.setInputs(l_speed * voltage, r_speed * voltage)
+        self.drivesim.update(tm_diff)
+
+        self.l_encoder.setDistance(self.drivesim.getLeftPosition() * 39.37)
+        self.l_encoder.setRate(self.drivesim.getLeftVelocity() * 39.37)
+        self.r_encoder.setDistance(self.drivesim.getRightPosition() * 39.37)
+        self.r_encoder.setRate(self.drivesim.getRightVelocity() * 39.37)
+        ###
 
         transform = self.drivetrain.calculate(l_motor, r_motor, tm_diff)
         pose = self.physics_controller.move_robot(transform)
