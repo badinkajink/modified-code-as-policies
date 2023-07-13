@@ -1,108 +1,77 @@
 #!/usr/bin/env python3
 
-from ctre import WPI_TalonFX, CANifier
-from ctre.sensors import WPI_CANCoder
-import magicbot
 import wpilib
-from components.drivetrain import SwerveModule, SwerveChassis
-from wpimath.geometry import Translation2d
-from components.driverstation import FROGStick
-from components.sensors import FROGGyro, FROGdar
+import wpilib.drive
 
-# robot characteristics
-# we are specifying inches and dividing by 12 to get feet,
-# giving us values that can be used with the fromFeet method
-# to get a correct Translation2d object
-trackwidth = 27.75 / 12  # feet between wheels side to side
-wheelbase = 21.75 / 12  # feet between wheels front to back
-
-kDeadzone = 0.05
+from robotpy_ext.autonomous import AutonomousModeSelector
 
 
-class FROGbot(magicbot.MagicRobot):
+class MyRobot(wpilib.TimedRobot):
     """
-    Initialize components here.
+    This shows using the AutonomousModeSelector to automatically choose
+    autonomous modes.
+
+    If you find this useful, you may want to consider using the Magicbot
+    framework, as it already has this integrated into it.
     """
-    gyro: FROGGyro
-    swerveChassis: SwerveChassis
 
-    swerveFrontLeft: SwerveModule
-    swerveFrontRight: SwerveModule
-    swerveBackLeft: SwerveModule
-    swerveBackRight: SwerveModule
+    def robotInit(self):
+        self.lstick = wpilib.Joystick(0)
+        self.rstick = wpilib.Joystick(1)
 
-    def createObjects(self):
-        """Create motors and inputs"""
-        # Swerve drive motors
-        self.swerveFrontLeft_drive = WPI_TalonFX(11)
-        self.swerveFrontRight_drive = WPI_TalonFX(12)
-        self.swerveBackLeft_drive = WPI_TalonFX(13)
-        self.swerveBackRight_drive = WPI_TalonFX(14)
-        # Swerve steer motors
-        self.swerveFrontLeft_steer = WPI_TalonFX(21)
-        self.swerveFrontRight_steer = WPI_TalonFX(22)
-        self.swerveBackLeft_steer = WPI_TalonFX(23)
-        self.swerveBackRight_steer = WPI_TalonFX(24)
-        # Swerve steer encoders (canifier)
-        self.swerveFrontLeft_encoder = WPI_CANCoder(31)
-        self.swerveFrontRight_encoder = WPI_CANCoder(32)
-        self.swerveBackLeft_encoder = WPI_CANCoder(33)
-        self.swerveBackRight_encoder = WPI_CANCoder(34)
-        # Swerve module locations
-        # TODO: move to swerveChassis?
-        self.swerveFrontLeft_location = Translation2d.fromFeet(
-            wheelbase / 2,
-            trackwidth / 2,
-        )
-        self.swerveFrontRight_location = Translation2d.fromFeet(
-            wheelbase / 2,
-            -trackwidth / 2,
-        )
-        self.swerveBackLeft_location = Translation2d.fromFeet(
-            -wheelbase / 2,
-            trackwidth / 2,
-        )
-        self.swerveBackRight_location = Translation2d.fromFeet(
-            -wheelbase / 2,
-            -trackwidth / 2,
-        )
+        # Simple two wheel drive
+        self.l_motor = wpilib.Talon(0)
+        self.r_motor = wpilib.Talon(1)
 
-        self.swerveFrontLeft_steerOffset = 0.0
-        self.swerveFrontRight_steerOffset = 0.0
-        self.swerveBackLeft_steerOffset = 0.0
-        self.swerveBackRight_steerOffset = 0.0
+        self.drive = wpilib.drive.DifferentialDrive(self.l_motor, self.r_motor)
+        # Position gets automatically updated as robot moves
+        self.gyro = wpilib.AnalogGyro(1)
+        self.motor = wpilib.Talon(2)
 
-        # config for saitek joystick
-        self.driveStick = FROGStick(0, 0, 1, 3, 2)
+        self.limit1 = wpilib.DigitalInput(1)
+        self.limit2 = wpilib.DigitalInput(2)
 
-    def teleopInit(self):
-        """Called when teleop starts; optional"""
-        self.swerveChassis.enable()
-        pass
+        self.position = wpilib.AnalogInput(2)
+
+        # Items in this dictionary are available in your autonomous mode
+        # as attributes on your autonomous object
+        self.components = {"drive": self.drive, "gyro": self.gyro, "motor": self.motor, 
+                           "limit1": self.limit1, "limit2": self.limit2, "position": self.position }
+
+        # * The first argument is the name of the package that your autonomous
+        #   modes are located in
+        # * The second argument is passed to each StatefulAutonomous when they
+        #   start up
+        self.automodes = AutonomousModeSelector("autonomous", self.components)
+
+    def autonomousInit(self):
+        self.drive.setSafetyEnabled(True)
+        self.automodes.start()
+
+    def autonomousPeriodic(self):
+        self.automodes.periodic()
+
+    def disabledInit(self):
+        self.automodes.disable()
 
     def teleopPeriodic(self):
-        """Called on each iteration of the control loop"""
-        vX, vY, vT = (
-            (self.driveStick.getFieldForward(), 0)[
-                abs(self.driveStick.getFieldForward()) < kDeadzone
-            ],
-            (self.driveStick.getFieldLeft(), 0)[
-                abs(self.driveStick.getFieldLeft()) < kDeadzone
-            ],
-            (self.driveStick.getFieldRotation(), 0)[
-                abs(self.driveStick.getFieldRotation()) < kDeadzone
-            ],
-        )
-        self.swerveChassis.field_oriented_drive(vX, vY, vT)
+        """Called when operation control mode is enabled"""
 
-    def testInit(self):
-        """Called when test mode starts; optional"""
-        pass
+        self.drive.arcadeDrive(self.lstick.getX(), self.lstick.getY())
 
-    def testPeriodic(self):
-        """Called on each iteration of the control loop"""
-        pass
+        # Move a motor with a Joystick
+        y = self.rstick.getY()
+
+        # stop movement backwards when 1 is on
+        if self.limit1.get():
+            y = max(0, y)
+
+        # stop movement forwards when 2 is on
+        if self.limit2.get():
+            y = min(0, y)
+
+        self.motor.set(y)
 
 
 if __name__ == "__main__":
-    wpilib.run(FROGbot)
+    wpilib.run(MyRobot)
