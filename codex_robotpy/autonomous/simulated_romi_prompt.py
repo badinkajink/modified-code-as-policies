@@ -1,3 +1,4 @@
+# Robot Definition Code
 #!/usr/bin/env python3
 
 import wpilib
@@ -6,8 +7,6 @@ import romi
 import math
 
 from robotpy_ext.autonomous import AutonomousModeSelector
-
-
 class MyRobot(wpilib.TimedRobot):
     """
     This shows using the AutonomousModeSelector to automatically choose
@@ -144,7 +143,6 @@ class MyRobot(wpilib.TimedRobot):
         self.automodes.periodic()
 
     def disabledInit(self):
-        self.drive.setSafetyEnabled(True)
         self.automodes.disable()
 
     def teleopPeriodic(self):
@@ -165,6 +163,44 @@ class MyRobot(wpilib.TimedRobot):
 
         self.motor.set(y)
 
+# Robot Autonomous Code
+from robotpy_ext.autonomous import StatefulAutonomous, state, timed_state
+class DriveBackwards(StatefulAutonomous):
+    MODE_NAME = "Drive Backwards"
 
-if __name__ == "__main__":
-    wpilib.run(MyRobot)
+    def initialize(self):
+        # This allows you to tune the variable via the SmartDashboard over
+        # networktables
+        self.register_sd_var("drive_speed", -1)
+
+    @timed_state(duration=0.5, next_state="drive_backwards", first=True)
+    def drive_wait(self):
+        self.drive.tankDrive(0, 0)
+
+    @timed_state(duration=5, next_state="stop")
+    def drive_backwards(self):
+        self.drive.tankDrive(self.drive_speed, -1 * (self.drive_speed))
+
+    @state()  # Remove or modify this to add additional states to this class.
+    def stop(self):
+        self.drive.tankDrive(0, 0)
+
+class DriveForward(StatefulAutonomous):
+    MODE_NAME = "Drive Forward"
+
+    def initialize(self):
+        # This allows you to tune the variable via the SmartDashboard over
+        # networktables
+        self.register_sd_var("drive_speed", 1)
+
+    @timed_state(duration=0.5, next_state="drive_forward", first=True)
+    def drive_wait(self):
+        self.drive.tankDrive(0, 0)
+
+    @timed_state(duration=5, next_state="stop")
+    def drive_forward(self):
+        self.drive.tankDrive(self.drive_speed, -1 * (self.drive_speed))
+
+    @state()  # Remove or modify this to add additional states to this class.
+    def stop(self):
+        self.drive.tankDrive(0, 0)

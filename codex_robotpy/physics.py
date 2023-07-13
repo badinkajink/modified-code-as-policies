@@ -60,6 +60,7 @@ class PhysicsEngine:
 
         '''
         # Romi Motor Specs for reference: TI_RSLK MAX
+        # https://docs.wpilib.org/en/stable/docs/romi-robot/getting-to-know-romi.html
         MOTOR_CFG_ROMI_MOTOR = MotorModelConfig(
             "Romi Motor",
             NOMINAL_VOLTAGE,
