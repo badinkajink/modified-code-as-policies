@@ -18,7 +18,7 @@
     "###/SmartDashboard/Autonomous Mode": {
       "Collapsed": "0",
       "Pos": "113,38",
-      "Size": "307,60"
+      "Size": "254,54"
     },
     "###/SmartDashboard/Field": {
       "Collapsed": "0",
@@ -33,17 +33,17 @@
     "###Encoders": {
       "Collapsed": "0",
       "Pos": "955,186",
-      "Size": "280,502"
+      "Size": "231,445"
     },
     "###FMS": {
       "Collapsed": "0",
       "Pos": "6,283",
-      "Size": "336,164"
+      "Size": "283,146"
     },
     "###Joysticks": {
       "Collapsed": "0",
       "Pos": "247,687",
-      "Size": "976,179"
+      "Size": "796,155"
     },
     "###NetworkTables": {
       "Collapsed": "0",
@@ -68,12 +68,12 @@
     "###System Joysticks": {
       "Collapsed": "0",
       "Pos": "18,453",
-      "Size": "232,254"
+      "Size": "192,218"
     },
     "###Timing": {
       "Collapsed": "0",
       "Pos": "5,150",
-      "Size": "162,142"
+      "Size": "135,127"
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -83,7 +83,7 @@
     "Robot State": {
       "Collapsed": "0",
       "Pos": "5,20",
-      "Size": "109,114"
+      "Size": "92,99"
     }
   }
 }

@@ -75,10 +75,18 @@ class PhysicsEngine:
         # trackwidth of 141mm (5.5")
         # 12cpr encoders, 1440 counts per revolution
         '''
+        MOTOR_CFG_ROMI_MOTOR = motor_cfgs.MotorModelConfig(
+            "Romi Motor",
+            4.5 * units.volts,
+            150 * units.cpm,
+            0.13 * units.amp,
+            0.1765 * units.N_m,
+            1.25 * units.amp,
+        )
 
         # fmt: off
         self.drivetrain = tankmodel.TankModel.theory(
-            motor_cfgs.MOTOR_CFG_ROMI_MOTOR,           # motor configuration
+            MOTOR_CFG_ROMI_MOTOR,           # motor configuration
             0.47 * units.lbs,                    # robot mass
             0.00833,                             # drivetrain gear ratio 120:1
             1,                                   # motors per side

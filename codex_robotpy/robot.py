@@ -5,6 +5,7 @@ import wpilib.drive
 import romi
 import math
 
+import robotpy_ext
 from robotpy_ext.autonomous import AutonomousModeSelector
 
 
