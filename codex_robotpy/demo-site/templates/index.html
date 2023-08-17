@@ -2,17 +2,116 @@
 <html>
 <head>
     <title>OpenAI API Integration</title>
+    <!-- Add Bootstrap CSS link -->
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/addon/runmode/runmode-standalone.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/lib/codemirror.min.css">
+
+    <!-- Add Bootstrap JS and jQuery scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        /* Custom CSS for Python code style */
+        .code {
+            font-family: "Courier New", monospace;
+            white-space: pre;
+        }
+
+        /* Custom CSS for code box */
+        .code-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f8f9fa;
+            margin-top: 20px;
+        }
+
+        .row{ display: flex; align-items: center;}
+
+    </style>
 </head>
 <body>
-    <h1>Generate Text Completions with OpenAI</h1>
-    <form method="POST">
-        <label for="prompt">Enter a prompt:</label><br>
-        <textarea name="prompt" rows="4" cols="50">{{ prompt }}</textarea><br>
-        <input type="submit" value="Generate">
-    </form>
-    {% if completion %}
-    <h2>Generated Completion:</h2>
-    <p>{{ completion }}</p>
-    {% endif %}
-</body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Generate Romi Autonomous Routines with Codex</h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <!-- <div class="row">
+                    <div class="col-2 d-flex flex-column ">
+                        <input type="file" accept=".py, .txt" class="form-control-file mb-2" id="fileInput" style="display: none;">
+                        <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('fileInput').click();">Upload Code</button>
+                        <label for="prompt">OR Enter a prompt:</label>
+                    </div>
+                </div>
+                <textarea class="form-control code" name="prompt" rows="16">
+                </textarea> -->
+                <div class="row">
+                    <div class="col d-flex flex-column">
+                        <input type="file" accept=".py, .txt" class="form-control-file mb-2" id="fileInput" style="display: none;" onchange="handleFileUpload(this)">
+                        <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('fileInput').click();">Upload Code</button>
+                        <label for="prompt">OR Enter a prompt:</label>
+                        <div id="editorTarget"></div>
+                        <textarea id="editorSource" name="editorSource" class="form-control" name="prompt" rows="16" id="promptTextarea">{{ prompt }}</textarea>
+                        <script src="../static/cm6editor.js"></script>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate</button>
+        </form>
+
+        {% if completion %}
+        <div class="mt-4">
+            <h2>Generated Completion:</h2>
+        </div>
+        <div class="code-box">
+            <pre id="generatedCode">
+{{ completion }} </pre>
+            <a href="#" class="btn btn-success mt-2" download="generated_code.py" id="downloadButton">Download Python File</a>
+        </div>
+        {% endif %}
+
+    </div>
+    </body>
+
+    <script>
+        // Download button logic
+        const downloadButton = document.getElementById('downloadButton');
+        const generatedCode = '{{ completion|e }}'; // Escaping completion text
+        
+        downloadButton.addEventListener('click', () => {
+            const blob = new Blob([generatedCode], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            downloadButton.href = url;
+        });
+
+        function handleFileUpload(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('editorSource').value = e.target.result;
+            };
+            reader.readAsText(file);
+            }
+        }
+
+        window.onload = function(){
+            var codeElement = document.getElementById('generatedCode');
+            // Add code mirror class for coloring (default is the theme)
+            codeElement.classList.add( 'cm-s-default' );
+            var code = codeElement.innerText;
+
+            codeElement.innerHTML = "";
+
+            CodeMirror.runMode(
+              code,
+              'python',
+              codeElement
+            );
+        };
+    </script>
+
 </html>

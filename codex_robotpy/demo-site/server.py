@@ -14,11 +14,11 @@ def index():
     if request.method == "POST":
         prompt = request.form.get("prompt")
 
-        # Use the OpenAI API to generate a completion
+        # Use the OpenAI API to generate a completion using "codex" engine
         response = openai.Completion.create(
-            engine="davinci",  # Use "davinci" engine for text completions
+            engine="codex",  # Use "codex" engine for code completions
             prompt=prompt,
-            max_tokens=50  # Adjust the number of tokens in the completion
+            max_tokens=300  # Adjust the number of tokens in the completion
         )
 
         completion = response.choices[0].text.strip()
