@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenAI API Integration</title>
+</head>
+<body>
+    <h1>Generate Text Completions with OpenAI</h1>
+    <form method="POST">
+        <label for="prompt">Enter a prompt:</label><br>
+        <textarea name="prompt" rows="4" cols="50">{{ prompt }}</textarea><br>
+        <input type="submit" value="Generate">
+    </form>
+    {% if completion %}
+    <h2>Generated Completion:</h2>
+    <p>{{ completion }}</p>
+    {% endif %}
+</body>
+</html>

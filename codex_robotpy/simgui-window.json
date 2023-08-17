@@ -5,13 +5,13 @@
   "MainWindow": {
     "GLOBAL": {
       "fps": "120",
-      "height": "833",
+      "height": "876",
       "maximized": "0",
       "style": "1",
       "userScale": "2",
-      "width": "1280",
-      "xpos": "93",
-      "ypos": "65"
+      "width": "1450",
+      "xpos": "384",
+      "ypos": "161"
     }
   },
   "Window": {
@@ -57,7 +57,7 @@
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1026,19",
+      "Pos": "1194,21",
       "Size": "250,695"
     },
     "###RoboRIO": {
