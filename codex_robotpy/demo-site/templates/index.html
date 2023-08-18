@@ -41,24 +41,21 @@
     <div class="container mt-5">
         <h1 class="mb-4">Generate Romi Autonomous Routines with Codex</h1>
 
-        <form method="POST">
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-3 d-flex flex-column">
-                        <input type="file" accept=".py, .txt" class="form-control-file mb-2" id="fileInput" style="display: none;" onchange="handleFileUpload(this)">
-                        <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('fileInput').click();">Upload Code</button>
-                        <label for="prompt">OR Enter a prompt:</label>
+            <form id="generate-form">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-3 d-flex flex-column">
+                            <input type="file" accept=".py, .txt" class="form-control-file mb-2" id="fileInput" style="display: none;" onchange="handleFileUpload(this)">
+                            <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('fileInput').click();">Upload Code</button>
+                            <label for="prompt">OR Enter a prompt:</label>
+                        </div>
                     </div>
+                    <script type="text/javascript" src="{{ url_for('static', filename = 'codemirror.js') }}"></script>
+                    <script type="text/javascript" src="{{ url_for('static', filename = 'mode/python.js') }}"></script>
+                    <textarea class="form-control" name="prompt" rows="24" id="promptTextarea">{{ prompt }}</textarea>
                 </div>
-                <script type="text/javascript" src="{{ url_for('static', filename = 'codemirror.js') }}"></script>
-                <script type="text/javascript" src="{{ url_for('static', filename = 'generate.js') }}"></script>
-                <script type="text/javascript" src="{{ url_for('static', filename = 'mode/python.js') }}"></script>
-                <!-- <script src="../static/codemirror.js"></script> -->
-                <!-- <script src="../static/mode/python.js"></script>                     -->
-                <textarea class="form-control" name="prompt" rows="24" id="promptTextarea">{{ prompt }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" name="generate" id="generate_button" value=1>Generate</button>
-        </form>
+            <button onclick="change()" type="submit" class="btn btn-primary" id="generate-button" name="generate" value=0>Generate</button>
+            </form>
 
         <div class="mt-4">
             <h2>Generated Completion:</h2>
@@ -90,15 +87,6 @@
             downloadButton.href = url;
         });
 
-        window.onload = function() {
-            var promptTextarea = document.getElementById('promptTextarea');
-            var promptEditor = CodeMirror.fromTextArea(promptTextarea, {
-                mode: 'python',
-                theme: 'default',
-                lineNumbers: true
-            });
-        }
-
         function handleFileUpload(input) {
         const file = input.files[0];
         if (file) {
@@ -110,6 +98,20 @@
             reader.readAsText(file);
             }
         }
+
+        $(document).ready(function() {
+            $("#generate-button").click(function() {
+                event.preventDefault();
+                $.post({
+                    url: "/generate",
+                    data: $("#generate-form").serialize(),
+                    success: function(data) {
+                        console.log(data.completion)
+                        $("#generatedCode").text(data.completion);
+                    }
+                });
+            });
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.61.0/addon/runmode/runmode-standalone.min.js"></script>
