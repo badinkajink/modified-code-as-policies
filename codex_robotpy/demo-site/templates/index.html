@@ -47,14 +47,14 @@
                         <div class="col-3 d-flex flex-column">
                             <input type="file" accept=".py, .txt" class="form-control-file mb-2" id="fileInput" style="display: none;" onchange="handleFileUpload(this)">
                             <button type="button" class="btn btn-secondary mt-2" onclick="document.getElementById('fileInput').click();">Upload Code</button>
-                            <label for="prompt">OR Enter a prompt:</label>
+                            <label for="prompt">Or enter a prompt:</label>
                         </div>
                     </div>
                     <script type="text/javascript" src="{{ url_for('static', filename = 'codemirror.js') }}"></script>
                     <script type="text/javascript" src="{{ url_for('static', filename = 'mode/python.js') }}"></script>
                     <textarea class="form-control" name="prompt" rows="24" id="promptTextarea">{{ prompt }}</textarea>
                 </div>
-            <button onclick="change()" type="submit" class="btn btn-primary" id="generate-button" name="generate" value=0>Generate</button>
+            <button type="submit" class="btn btn-primary" id="generate-button" name="generate">Generate</button>
             </form>
 
         <div class="mt-4">
@@ -73,7 +73,7 @@
     <script>
         // Download button logic
         const downloadButton = document.getElementById('downloadButton');
-        const generatedCode = '{{ completion|e }}'; // Escaping completion text
+        const generatedCode = `{{ completion|e }}`; // Escaping completion text
         var promptTextarea = document.getElementById('promptTextarea');
         var promptEditor = CodeMirror.fromTextArea(promptTextarea, {
             mode: 'python',
@@ -82,7 +82,8 @@
         });
 
         downloadButton.addEventListener('click', () => {
-            const blob = new Blob([generatedCode], { type: 'text/plain' });
+            text = document.getElementById('generatedCode').innerText
+            const blob = new Blob([text], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             downloadButton.href = url;
         });
@@ -102,12 +103,28 @@
         $(document).ready(function() {
             $("#generate-button").click(function() {
                 event.preventDefault();
-                $.post({
+                $.ajax({
+                    type: "POST",
                     url: "/generate",
-                    data: $("#generate-form").serialize(),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",    
+                    data: JSON.stringify(promptEditor.getValue()),
                     success: function(data) {
-                        console.log(data.completion)
+                        // console.log(data.completion)
                         $("#generatedCode").text(data.completion);
+                        var codeElement = document.getElementById('generatedCode');
+                        // Add code mirror class for coloring (default is the theme)
+                        codeElement.classList.add( 'cm-s-default' );
+                        var code = codeElement.innerText;
+
+                        codeElement.innerHTML = "";
+
+                        CodeMirror.runMode(
+                        code,
+                        'python',
+                        codeElement
+                        );
+
                     }
                 });
             });
