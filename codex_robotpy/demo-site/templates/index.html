@@ -80,7 +80,7 @@
         });
 
         downloadButton.addEventListener('click', () => {
-            text = document.getElementById('generatedCode').innerText
+            text = promptEditor.getValue() + document.getElementById('generatedCode').innerText
             const blob = new Blob([text], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             downloadButton.href = url;
